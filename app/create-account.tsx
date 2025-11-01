@@ -1,54 +1,75 @@
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Image } from 'expo-image';
+import { styled } from 'nativewind';
+import LinearGradient from 'react-native-linear-gradient';
+import { useTheme } from '@/contexts/theme-context';
+
+const StyledView = styled(View);
+const StyledText = styled(Text);
+const StyledTextInput = styled(TextInput);
+const StyledTouchableOpacity = styled(TouchableOpacity);
+const StyledLinearGradient = styled(LinearGradient);
 
 export default function CreateAccountScreen() {
   const router = useRouter();
+  const { colors, isDarkMode } = useTheme();
+
+  const gradientColors = isDarkMode
+    ? [colors.primary, colors.secondary]
+    : ['#FFFFFF', '#F0F2F5'];
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-1 justify-center p-4">
-        <Image
-          source={require('@/assets/images/icon.png')}
-          className="w-24 h-24 mx-auto mb-8"
-          contentFit="contain"
-        />
-        <Text className="text-3xl font-bold text-center mb-8">Create Account</Text>
-        <TextInput
-          className="bg-gray-100 p-4 rounded-lg mb-4"
-          placeholder="Full Name"
-        />
-        <TextInput
-          className="bg-gray-100 p-4 rounded-lg mb-4"
-          placeholder="Email"
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        <TextInput
-          className="bg-gray-100 p-4 rounded-lg mb-4"
-          placeholder="Phone Number"
-          keyboardType="phone-pad"
-        />
-        <TextInput
-          className="bg-gray-100 p-4 rounded-lg mb-4"
-          placeholder="Password"
-          secureTextEntry
-        />
-        <TouchableOpacity
-          className="bg-blue-500 w-full py-4 rounded-full mb-4"
-          onPress={() => router.push('/(tabs)')}
-        >
-          <Text className="text-white text-center text-lg font-bold">
+    <StyledLinearGradient colors={gradientColors} className="flex-1">
+      <SafeAreaView className="flex-1 justify-center p-6">
+        <StyledView>
+          <StyledText className="text-4xl font-bold text-center mb-2" style={{ color: colors.text }}>
             Create Account
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push('/login')}>
-          <Text className="text-center text-blue-500">
-            Already have an account? Login
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+          </StyledText>
+          <StyledText className="text-lg text-center text-gray-500 mb-12">
+            Get started with CityGlide
+          </StyledText>
+
+          <StyledTextInput
+            className="bg-white/20 p-4 rounded-lg mb-4 text-white placeholder:text-white/60"
+            placeholder="Full Name"
+            placeholderTextColor="rgba(255, 255, 255, 0.6)"
+          />
+          <StyledTextInput
+            className="bg-white/20 p-4 rounded-lg mb-4 text-white placeholder:text-white/60"
+            placeholder="Email"
+            placeholderTextColor="rgba(255, 255, 255, 0.6)"
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          <StyledTextInput
+            className="bg-white/20 p-4 rounded-lg mb-4 text-white placeholder:text-white/60"
+            placeholder="Password"
+            placeholderTextColor="rgba(255, 255, 255, 0.6)"
+            secureTextEntry
+          />
+
+          <StyledTouchableOpacity
+            className="w-full py-4 rounded-full mt-4"
+            onPress={() => router.push('/(tabs)')}
+          >
+            <StyledLinearGradient
+              colors={isDarkMode ? [colors.primaryRed, colors.accentRed] : [colors.primary, '#A855F7']}
+              className="w-full py-4 rounded-full"
+            >
+              <StyledText className="text-white text-center text-lg font-bold">
+                Create Account
+              </StyledText>
+            </StyledLinearGradient>
+          </StyledTouchableOpacity>
+
+          <StyledTouchableOpacity onPress={() => router.push('/login')} className="mt-6">
+            <StyledText className="text-center" style={{ color: colors.text }}>
+              Already have an account? <StyledText className="font-bold">Login</StyledText>
+            </StyledText>
+          </StyledTouchableOpacity>
+        </StyledView>
+      </SafeAreaView>
+    </StyledLinearGradient>
   );
 }
