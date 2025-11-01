@@ -1,70 +1,100 @@
-import { View, Text, TouchableOpacity } from 'react-native';
-import { Image } from 'expo-image';
-import { FontAwesome } from '@expo/vector-icons';
+import { View, Text, TouchableOpacity, Switch } from 'react-native';
+import { styled } from 'nativewind';
+import { useTheme } from '@/contexts/theme-context';
+import { Home, History, MapPin, CreditCard, User, X, Sun, Moon, LogOut } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { useEffect } from 'react';
+import LinearGradient from 'react-native-linear-gradient';
 
-export default function AnimatedSidebar({ isOpen, onClose }) {
+const StyledView = styled(View);
+const StyledText = styled(Text);
+const StyledTouchableOpacity = styled(TouchableOpacity);
+const StyledLinearGradient = styled(LinearGradient);
+
+export default function AnimatedSidebar({ navigation }) {
+  const { colors, isDarkMode, toggleTheme } = useTheme();
   const router = useRouter();
-  const translateX = useSharedValue(-300);
 
-  useEffect(() => {
-    translateX.value = withTiming(isOpen ? 0 : -300);
-  }, [isOpen]);
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: translateX.value }],
-    };
-  });
+  const menuItems = [
+    { icon: Home, label: 'Home', path: '/(tabs)' },
+    { icon: History, label: 'Trip History', path: '/trip-history' },
+    { icon: MapPin, label: 'Saved Places', path: '/saved-locations' },
+    { icon: CreditCard, label: 'Wallet', path: '/payment' },
+    { icon: User, label: 'Profile', path: '/profile' },
+  ];
 
   const handleNavigation = (path) => {
-    onClose();
+    navigation.closeDrawer();
     router.push(path);
   };
 
   return (
-    <Animated.View
-      style={[
-        animatedStyle,
-        {
-          position: 'absolute',
-          top: 0,
-          bottom: 0,
-          left: 0,
-          width: 300,
-          backgroundColor: 'white',
-          zIndex: 100,
-          padding: 20,
-        },
-      ]}
-    >
-      <View className="items-center mb-8">
-        <Image
-          source={{ uri: 'https://i.pravatar.cc/150?u=a042581f4e29026704d' }}
-          className="w-24 h-24 rounded-full mb-4"
-        />
-        <Text className="text-2xl font-bold">Jules</Text>
-        <Text className="text-gray-500">jules@example.com</Text>
-      </View>
-      <NavItem icon="home" label="Home" onPress={() => handleNavigation('/(tabs)')} />
-      <NavItem icon="history" label="Trip History" onPress={() => handleNavigation('/trip-history')} />
-      <NavItem icon="star" label="Saved Places" onPress={() => handleNavigation('/saved-places')} />
-      <NavItem icon="wallet" label="Wallet" onPress={() => handleNavigation('/wallet')} />
-      <NavItem icon="user" label="Profile" onPress={() => handleNavigation('/profile')} />
-      <View className="flex-1" />
-      <NavItem icon="sign-out" label="Logout" onPress={() => router.push('/login')} />
-    </Animated.View>
+    <StyledView style={{ backgroundColor: isDarkMode ? colors.primary : colors.background }} className="flex-1 p-6">
+        {/* Header */}
+        <StyledView className="flex-row items-center justify-between">
+            <StyledView className="flex-row items-center">
+                <StyledLinearGradient colors={isDarkMode ? [colors.primaryRed, colors.accentRed] : [colors.primary, '#A855F7']} className="w-12 h-12 items-center justify-center rounded-xl">
+                    <Home color="white" />
+                </StyledLinearGradient>
+                <StyledView className="ml-3">
+                    <StyledText className="font-bold text-xl dark:text-white">SmartRide</StyledText>
+                    <StyledText className="text-xs text-gray-500">Navigate with ease</StyledText>
+                </StyledView>
+            </StyledView>
+            <StyledTouchableOpacity onPress={() => navigation.closeDrawer()} className="p-2 bg-gray-100 dark:bg-white/10 rounded-full">
+                <X size={18} color={isDarkMode ? 'white' : 'black'} />
+            </StyledTouchableOpacity>
+        </StyledView>
+
+        {/* User Info */}
+        <StyledView className="mt-6 p-4 rounded-2xl bg-gray-100 dark:bg-white/10">
+            <StyledView className="flex-row items-center">
+                <StyledView className="w-12 h-12 rounded-full bg-primary-red items-center justify-center">
+                    <StyledText className="text-white font-bold text-xl">JD</StyledText>
+                </StyledView>
+                <StyledView className="ml-3">
+                    <StyledText className="font-bold dark:text-white">John Doe</StyledText>
+                    <StyledText className="text-gray-500 text-xs">john@example.com</StyledText>
+                </StyledView>
+            </StyledView>
+        </StyledView>
+
+        {/* Menu Items */}
+        <StyledView className="mt-6">
+            {menuItems.map((item, index) => (
+                <MenuItem key={index} icon={item.icon} label={item.label} onPress={() => handleNavigation(item.path)} />
+            ))}
+        </StyledView>
+
+        <StyledView className="flex-1" />
+
+        {/* Footer */}
+        <StyledView className="pb-6">
+            <ThemeToggle isDarkMode={isDarkMode} onToggle={toggleTheme} />
+            <StyledTouchableOpacity className="mt-4 flex-row items-center justify-center py-3 rounded-full bg-red-500/10 border border-red-500/30">
+                <LogOut size={16} color="red" />
+                <StyledText className="text-red-500 font-bold ml-2">Logout</StyledText>
+            </StyledTouchableOpacity>
+        </StyledView>
+    </StyledView>
   );
 }
 
-const NavItem = ({ icon, label, onPress }) => (
-  <TouchableOpacity
-    className="flex-row items-center p-4 mb-2 rounded-lg hover:bg-gray-100"
-    onPress={onPress}
-  >
-    <FontAwesome name={icon} size={20} color="gray" className="mr-4" />
-    <Text className="text-lg">{label}</Text>
-  </TouchableOpacity>
+const MenuItem = ({ icon: Icon, label, onPress }) => (
+    <StyledTouchableOpacity onPress={onPress} className="flex-row items-center py-3 mb-2">
+        <StyledView className="w-10 h-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-white/10">
+            <Icon color="gray" size={20} />
+        </StyledView>
+        <StyledText className="font-bold text-lg ml-4 dark:text-white">{label}</StyledText>
+    </StyledTouchableOpacity>
+);
+
+const ThemeToggle = ({ isDarkMode, onToggle }) => (
+    <StyledView className="flex-row items-center justify-between p-2 rounded-full bg-gray-100 dark:bg-primary-dark">
+        <StyledTouchableOpacity className={`p-2 rounded-full w-1/2 items-center ${!isDarkMode ? 'bg-white' : ''}`}>
+            <Sun color={isDarkMode ? 'gray' : 'black'} />
+        </StyledTouchableOpacity>
+        <StyledTouchableOpacity className={`p-2 rounded-full w-1/2 items-center ${isDarkMode ? 'bg-primary-red' : ''}`}>
+            <Moon color={isDarkMode ? 'white' : 'gray'} />
+        </StyledTouchableOpacity>
+    </StyledView>
 );
