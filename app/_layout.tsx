@@ -2,14 +2,17 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
+import { ThemeProvider } from '@/components/ThemeProvider';
 import '@/styles/global.css';
-import { ThemeProvider } from '@/contexts/theme-context';
+import { useColorScheme } from 'react-native';
 
 export const unstable_settings = {
   anchor: '(tabs)',
 };
 
 export default function RootLayout() {
+  const colorScheme = useColorScheme();
+
   return (
     <ThemeProvider>
       <Stack>
@@ -22,7 +25,7 @@ export default function RootLayout() {
         <Stack.Screen name="saved-locations" options={{ headerShown: false }} />
         <Stack.Screen name="payment" options={{ headerShown: false }} />
         <Stack.Screen name="profile" options={{ headerShown: false }} />
-        <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
       <StatusBar style="auto" />
